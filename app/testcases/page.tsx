@@ -21,29 +21,33 @@ const displayOrder: TestCase = {
 const headers = Object.keys(displayOrder)
 
 export default async function Home() {  
-  const data = await getData()
-  const testcases: TestCase[] = data['results']
-
   return (
     <div className="h-full w-5/6 p-20">
-        {TestCaseTable(testcases)}
+        {TestCaseTable()}
     </div>
   );
 }
 
-function TestCaseTable(data: TestCase[]) {
-  const tableHeaders = []
+async function TestCaseTable() {
+  return (
+    <table className="border-collapse border border-gray-300 w-full">
+      <thead>
+        <tr>
+          {TableHeaders()}
+        </tr>
+      </thead>
+      <tbody>
+          {TestCaseRows()}
+      </tbody>
+    </table>
+  );
+}
+
+async function TestCaseRows(){
   const testCaseRows = []
-
-  for(var indx in headers){
-    tableHeaders.push(
-      <th key={indx} className="border border-gray-300 px-4 py-2 text-left bg-gray-100">
-        {headers[indx]}
-      </th>
-    )
-  }
-
-  for(var testcase of data){
+  const data = await getData()
+  const testcases: TestCase[] = data['results']
+  for(var testcase of testcases){
     const testCaseColumn = []
     for(var header of headers){
       const value = testcase[header as keyof typeof displayOrder]
@@ -60,19 +64,19 @@ function TestCaseTable(data: TestCase[]) {
       </tr>
     )
   }
-  
-  return (
-    <table className="border-collapse border border-gray-300 w-full">
-      <thead>
-        <tr>
-          {tableHeaders}
-        </tr>
-      </thead>
-      <tbody>
-          {testCaseRows}
-      </tbody>
-    </table>
-  );
+  return testCaseRows
+}
+
+function TableHeaders() {
+  const tableHeaders = []
+  for(var indx in headers){
+    tableHeaders.push(
+      <th key={indx} className="border border-gray-300 px-4 py-2 text-left bg-gray-100">
+        {headers[indx]}
+      </th>
+    )
+  }
+  return tableHeaders
 }
 
 

@@ -1,6 +1,5 @@
-import { TestCase } from "./models";
-import { PyTADClient } from "../pytadclient"
-
+import { PyTADClient, TestCase, ListTestCaseResponse} from "@/app/pytadclient"
+import Pagination from "@/app/testcases/pagination"
 const displayedFields: string[]=  [
   "id",
   "name",
@@ -10,15 +9,35 @@ const displayedFields: string[]=  [
   "create_date"
 ]
 
-export default async function Home() {  
+export default async function Page(props: {
+  searchParams?: Promise<{
+    page?: string;
+  }>;
+}) {
+  const searchParams = await props.searchParams;
+  const currentPage = Number(searchParams?.page) || 1;
+
+  let data: ListTestCaseResponse | null = null
+  let pytadClient = new PyTADClient()
+  try{
+    data = await pytadClient.listTestCases(currentPage)
+  } catch {
+    return ConnectionErrorMessage()
+  }
+
   return (
-    <div className="flex h-full w-full">
-        {TestCaseTable()}
+    <div className="flex flex-col h-full w-full">
+        <div>
+          <Pagination/>
+        </div>
+        <div>
+          {TestCaseTable(data)}
+        </div>
     </div>
   );
 }
 
-async function TestCaseTable() {
+async function TestCaseTable(data: ListTestCaseResponse) {
   return (
     <table className="border-collapse border border-gray-300 w-full">
       <thead>
@@ -27,24 +46,16 @@ async function TestCaseTable() {
         </tr>
       </thead>
       <tbody>
-          {TestCaseRows()}
+          {TestCaseRows(data)}
       </tbody>
     </table>
   );
 }
 
-async function TestCaseRows(){
-  let data = null
-  let pytadClient = new PyTADClient()
-  try{
-    data = await pytadClient.listTestCases()
-  } catch {
-    return ConnectionErrorMessageRow()
-  }
-
+async function TestCaseRows(data: ListTestCaseResponse){
   if(!(data === null)){
     const testCaseRows = []
-    const testcases: TestCase[] = data['results']
+    const testcases: TestCase[] = data.results
     for(const testcase of testcases){
       const testCaseColumn = []
       for(const field of displayedFields){
@@ -66,13 +77,11 @@ async function TestCaseRows(){
   }
 }
 
-function ConnectionErrorMessageRow(){
+function ConnectionErrorMessage(){
   return (
-    <tr key="FailedFetchPytad">
-      <td colSpan={displayedFields.length} className="text-center text-red-600 px-10">
+    <div className="text-center text-red-600 px-10">
         Failed to contact PYTAD server... Check server is running or environment variables
-      </td>
-    </tr>
+    </div>
   )
 }
 

@@ -19,9 +19,10 @@ export class PyTADClient {
         }
     }
 
-    async listTestCases(): Promise<any> {
+    async listTestCases(pageNumber: number = 1): Promise<ListTestCaseResponse> {
         const baseUrl = this.baseURL
-        const response = await fetch(`${baseUrl}${this.listTestCaseEndpoint}`, {
+        const url = `${baseUrl}${this.listTestCaseEndpoint}?page=${pageNumber}`
+        const response = await fetch(url, {
           method: 'GET',
           headers: this.baseHeader,
         });
@@ -46,4 +47,20 @@ export class PyTADClient {
         }
         return [envBaseURL, envApiKey]
     }
+}
+
+export interface TestCase {
+    code_hash: string;
+    create_date: string;
+    id: number;
+    internal_id: string | null;
+    name: string;
+    relative_path: string;
+}
+
+export interface ListTestCaseResponse {
+    count: number;
+    next: string;
+    previous: string;
+    results: TestCase[];
 }

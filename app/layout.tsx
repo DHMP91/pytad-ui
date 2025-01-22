@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Link from 'next/link'
 import "./globals.css";
 
 const geistSans = Geist({
@@ -30,7 +31,7 @@ export default function RootLayout({
           <div className="flex h-full w-full">
             <div className="h-full w-1/6 bg-gray-100 shadow-sm min-w-max">
               <div className="w-full bg-gray-100 p-10">
-                <a href="/">PyTAD</a>
+                <Link href="/">PyTAD</Link>
               </div>
               <div className="w-full bg-gray-100 p-10">
                 {SideMenu()}
@@ -48,7 +49,7 @@ export default function RootLayout({
 
 
 function SideMenu() {
-  let links: { [key: string]: string } = {
+  const links: { [key: string]: string } = {
     "/testcases" : "Test Cases",
     "/inprogress" : "In Progress",
     "/recents" : "Recent Runs",

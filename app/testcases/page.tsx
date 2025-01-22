@@ -1,28 +1,18 @@
-import Image from "next/image";
+import { TestCase } from "./models";
+import { PyTADClient } from "../pytadclient"
 
-type TestCase = {
-  code_hash: string;
-  create_date: string;
-  id: number;
-  internal_id: string | null;
-  name: string;
-  relative_path: string;
-};
-
-const displayOrder: TestCase = {
-  id: 0,
-  name: "",
-  relative_path: "",
-  internal_id: null,
-  code_hash: "",
-  create_date: "",
-};
-
-const headers = Object.keys(displayOrder)
+const displayedFields: string[]=  [
+  "id",
+  "name",
+  "relative_path",
+  "internal_id",
+  // "code_hash",
+  "create_date"
+]
 
 export default async function Home() {  
   return (
-    <div className="h-full w-5/6 p-20">
+    <div className="flex h-full w-full">
         {TestCaseTable()}
     </div>
   );
@@ -44,62 +34,56 @@ async function TestCaseTable() {
 }
 
 async function TestCaseRows(){
-  const testCaseRows = []
-  const data = await getData()
-  const testcases: TestCase[] = data['results']
-  for(var testcase of testcases){
-    const testCaseColumn = []
-    for(var header of headers){
-      const value = testcase[header as keyof typeof displayOrder]
-      testCaseColumn.push(
-        <td key={header} className="border border-gray-300 px-4 py-2">
-          {value}
-        </td>
+  let data = null
+  let pytadClient = new PyTADClient()
+  try{
+    data = await pytadClient.listTestCases()
+  } catch {
+    return ConnectionErrorMessageRow()
+  }
+
+  if(!(data === null)){
+    const testCaseRows = []
+    const testcases: TestCase[] = data['results']
+    for(const testcase of testcases){
+      const testCaseColumn = []
+      for(const field of displayedFields){
+        const value = testcase[field as keyof typeof testcase]
+        testCaseColumn.push(
+          <td key={field} className="border border-gray-300 px-4">
+            {value}
+          </td>
+        )
+      }
+
+      testCaseRows.push(
+        <tr key={testcase['id']}>
+          {testCaseColumn}
+        </tr>
       )
     }
-
-    testCaseRows.push(
-      <tr key={testcase['id']}>
-        {testCaseColumn}
-      </tr>
-    )
+    return testCaseRows
   }
-  return testCaseRows
+}
+
+function ConnectionErrorMessageRow(){
+  return (
+    <tr key="FailedFetchPytad">
+      <td colSpan={displayedFields.length} className="text-center text-red-600 px-10">
+        Failed to contact PYTAD server... Check server is running or environment variables
+      </td>
+    </tr>
+  )
 }
 
 function TableHeaders() {
   const tableHeaders = []
-  for(var indx in headers){
+  for(const indx in displayedFields){
     tableHeaders.push(
       <th key={indx} className="border border-gray-300 px-4 py-2 text-left bg-gray-100">
-        {headers[indx]}
+        {displayedFields[indx]}
       </th>
     )
   }
   return tableHeaders
-}
-
-
-async function getData() {
-  const baseUrl = process.env.PYTAD_URL
-  const apiKey = process.env.PYTAD_API_KEY
-  try {
-    const response = await fetch(`${baseUrl}/testcases/api/list`, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': `token ${apiKey}`,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    // console.log(data);
-    return data
-  } catch (error) {
-    console.error('Error fetching data:', error);
-  }
 }

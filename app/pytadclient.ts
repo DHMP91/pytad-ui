@@ -8,7 +8,7 @@ export class PyTADClient {
     constructor(baseURL: string, apiKey: string);
     constructor(baseURL?: string, apiKey?: string) {
         if(baseURL === undefined || apiKey === undefined){
-            [this.baseURL, this.apiKey] = this.getEnvinonmentValues()
+            [this.baseURL, this.apiKey] = this.getEnvironmentConfig()
         }else{
             this.baseURL = baseURL
             this.apiKey = apiKey
@@ -34,7 +34,7 @@ export class PyTADClient {
         return data
     }
     
-    private getEnvinonmentValues(): [string, string]{
+    private getEnvironmentConfig(): [string, string]{
         const envBaseURL = process.env.PYTAD_URL;
         if(envBaseURL == undefined){
             throw new Error(`Undefined pytad configuration. Please check .env for PYTAD Url`);

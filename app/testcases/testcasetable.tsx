@@ -8,7 +8,7 @@ const displayedFields: string[]=  [
     "relative_path",
     "internal_id",
     // "code_hash",
-    "create_date",
+    // "create_date",
   ]
 
 const getStatusColor = (status: TestRun["status"]) => {
@@ -20,7 +20,7 @@ const getStatusColor = (status: TestRun["status"]) => {
       case "SKIPPED":
         return "bg-yellow-500";
       default:
-        return "bg-gray-500"; // For "UNKNOWN" and any other unhandled cases
+        return "bg-gray-500";
     }
   };
   
@@ -47,7 +47,7 @@ function TestCaseRows(data: ListTestCaseResponse){
         for(const testcase of testcases){
             const testCaseColumn = []
             
-            //Test case info
+            //Test Case info
             for(const field of displayedFields){
                 const value = testcase[field as keyof typeof testcase]
                 if (typeof value === 'string' || typeof value === 'number' || value === null) {
@@ -63,16 +63,20 @@ function TestCaseRows(data: ListTestCaseResponse){
                 }
             }
 
-            //Test case runs
+
+            //Test Runs Info
             const testRuns = testcase.testRuns
             if(!(testRuns === null)){
+                testCaseColumn.push(
+                    <td key="lastRunTime" className={rowClassName}> {testRuns[0].start_time} </td>
+                )
                 testCaseColumn.push(
                     <td key="runs" className={rowClassName}>
                         <div className="flex flex-wrap gap-4">
                             {testRuns.map((testRun) => (
                                 <div key={testRun.id} className="flex items-center">
                                     <div
-                                        className={`h-1 w-1 rounded-full ${getStatusColor(testRun.status)}`}
+                                        className={`h-2 w-2 rounded-full ${getStatusColor(testRun.status)}`}
                                         title={testRun.status}
                                     ></div>
                                 </div>
@@ -82,13 +86,14 @@ function TestCaseRows(data: ListTestCaseResponse){
                 )
             }else{
                 testCaseColumn.push(
+                    <td key="lastRunTime" className={rowClassName}></td>,
                     <td key="runs" className={rowClassName}> No Runs </td>
                 )
             }
 
             testCaseRows.push(
                 <tr key={testcase['id']}>
-                {testCaseColumn}
+                    {testCaseColumn}
                 </tr>
             )
         }
@@ -107,10 +112,13 @@ function TableHeaders() {
         )
     }
 
-    //test case runs column
+    //Test Runs Info
     tableHeaders.push(
+        <th key="lastRunTime" className={className}>
+            Last Run
+        </th>,
         <th key="runs" className={className}>
-            Health Overview
+            History
         </th>
     )
     return tableHeaders

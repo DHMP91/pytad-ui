@@ -50,6 +50,7 @@ export default function RootLayout({
 
 function SideMenu() {
   const links: { [key: string]: string } = {
+    "/search": "Search",
     "/testcases" : "Test Cases",
     "/inprogress" : "In Progress",
     "/recents" : "Recent Runs",

@@ -2,7 +2,8 @@ export class PyTADClient {
     private baseURL: string
     private apiKey: string
     private listTestCaseEndpoint: string = "/testcases/api/list"
-    private listTestRunsEndpoint = (id: number): String => { return `/testcases/api/testcase/${id}/testruns` }
+    private listTestRunsEndpoint = (id: number): string => { return `/testcases/api/testcase/${id}/testruns` }
+    private listTestBodyEndpoint = (id: number): string => { return `/testcases/api/testcase/${id}/testbody` }
     private baseHeader: HeadersInit
 
     constructor();
@@ -28,7 +29,11 @@ export class PyTADClient {
         return this.get(this.listTestRunsEndpoint(testCaseId), `page=${pageNumber}`)
     }
 
-    private async get(endpoint: String, searchParams?: string){
+    async listTestBody(testCaseId: number, pageNumber: number = 1): Promise<ListTestBodyResponse> {
+        return this.get(this.listTestBodyEndpoint(testCaseId), `page=${pageNumber}`)
+    }
+
+    private async get(endpoint: string, searchParams?: string){
         const baseUrl = this.baseURL
         const url = `${baseUrl}${endpoint}${'?' + searchParams || ''}`
         const response = await fetch(url, {
@@ -60,12 +65,18 @@ export class PyTADClient {
 
 export interface TestCase {
     id: number;
-    code_hash: string;
     create_date: string;
     internal_id: string | null;
     name: string;
     relative_path: string;
     testRuns: TestRun[] | null;
+}
+
+export interface TestBody {
+    id: number;
+    create_date: string;
+    code: string;
+    code_hash: string;
 }
 
 export interface TestRun {
@@ -95,4 +106,8 @@ export interface ListTestCaseResponse extends ListResponse {
 
 export interface ListTestRunResponse extends ListResponse {
     results: TestRun[];
+}
+
+export interface ListTestBodyResponse extends ListResponse {
+    results: TestBody[];
 }

@@ -58,7 +58,7 @@ function TestCaseRows(data: ListTestCaseResponse){
                     )
                 } else {
                     <td key={field} className={rowClassName}>
-                        ""
+                         `&quot;``&quot;`
                     </td>
                 }
             }
@@ -92,8 +92,12 @@ function TestCaseRows(data: ListTestCaseResponse){
             }
 
             testCaseRows.push(
-                <tr key={testcase['id']}>
-                    {testCaseColumn}
+                <tr 
+                key={testcase['id']} 
+                className="cursor-pointer hover:bg-gray-200 hover:shadow-lg transition duration-100"
+                onClick={() => (window.location.href = `/testcases/testcase/${testcase['id']}`)}
+                >
+                        {testCaseColumn}
                 </tr>
             )
         }

@@ -1,6 +1,7 @@
-import { PyTADClient, TestCase, ListTestCaseResponse} from "@/app/pytadclient"
+import { PyTADClient, ListTestCaseResponse} from "@/app/pytadclient"
 import Pagination from "@/app/testcases/pagination"
 import TestCaseTable from "@/app/testcases/testcasetable"
+import { ConnectionErrorMessage } from "./common";
 
 
 export default async function Page(props: {
@@ -11,8 +12,8 @@ export default async function Page(props: {
   const searchParams = await props.searchParams;
   const currentPage = Number(searchParams?.page) || 1;
 
-  let data: ListTestCaseResponse | null = null
-  let pytadClient = new PyTADClient()
+  let data: ListTestCaseResponse;
+  const pytadClient = new PyTADClient()
   try{
     data = await pytadClient.listTestCases(currentPage)
     for(const testcase of data.results){
@@ -36,11 +37,5 @@ export default async function Page(props: {
 }
 
 
-function ConnectionErrorMessage(){
-  return (
-    <div className="text-center text-red-600 px-10">
-        Failed to contact PYTAD server... Check server is running or environment variables
-    </div>
-  )
-}
+
 

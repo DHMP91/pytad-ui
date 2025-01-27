@@ -91,6 +91,7 @@ export interface TestRun {
     product_version: string;
     environment: string;
     defects: string;
+    test_body_id: string;
 }
 
 

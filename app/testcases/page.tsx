@@ -24,10 +24,12 @@ export default async function Page(props: {
     return ConnectionErrorMessage()
   }
 
+  const showNext = !(data.next == undefined || data.next == "")
+  const showPrevious = !(data.previous == undefined || data.previous == "")
   return (
     <div className="flex flex-col h-full w-full">
         <div>
-          <Pagination/>
+          <Pagination previous={showPrevious} next={showNext}/>
         </div>
         <div>
           <TestCaseTable data={data}/>

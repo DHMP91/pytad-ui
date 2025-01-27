@@ -50,20 +50,22 @@ export default function RootLayout({
 
 function SideMenu() {
   const links: { [key: string]: string } = {
-    "/search": "Search",
-    "/testcases" : "Test Cases",
-    "/inprogress" : "In Progress",
-    "/recents" : "Recent Runs",
-    "/versions" : "Versions",
-    "/environments" : "Environments"
+    "Search": "",
+    "Test Cases" : "/testcases",
+    "In Progress" : "",
+    "Recent Runs" : "",
+    "Environments" : ""
   };
 
   return (
     <ul>
       {
-        Object.entries(links).map(([path, label]) => (
-          <li className="mt-5" key={path}>
-            <a href={path}>{label}</a>
+        Object.entries(links).map(([label, path]) => (
+          <li className="mt-5" key={label}>
+            {(path == "") 
+            ? <span className="cursor-not-allowed text-gray-400 pointer-events-none">{label} (Under development)</span>
+            : <Link href={path}>{label}</Link>
+            }
           </li>
         ))
       }

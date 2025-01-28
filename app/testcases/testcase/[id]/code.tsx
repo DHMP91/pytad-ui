@@ -4,6 +4,8 @@ import { ListTestBodyResponse } from "@/app/pytadclient";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import {default as materialLight} from "react-syntax-highlighter/dist/cjs/styles/prism/material-light";
 
 export default function CodeTab ({data}: {data: ListTestBodyResponse}) {
 
@@ -60,8 +62,10 @@ export default function CodeTab ({data}: {data: ListTestBodyResponse}) {
                 </div>
 
                 {/* Tab Content */}
-                <div className="p-4">
-                    <div>{content}</div>
+                <div className="p-4 h-full overflow-auto">
+                    <SyntaxHighlighter language="python" style={materialLight}>
+                        {content}
+                    </SyntaxHighlighter>
                 </div>
             </div>
         );
